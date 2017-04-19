@@ -1,6 +1,4 @@
-'use strict';
-require('console.table');
-const inquirer = require('inquirer');
+const properties = require('./prompts');
 const prompt = require('prompt');
 const mysql = require('mysql');
 const connection = mysql.createConnection({
@@ -10,26 +8,6 @@ const connection = mysql.createConnection({
     password: "",
     database: "bamazon_db"
 });
-
-const properties = {
-    properties: {
-        // The first should ask them the ID of the product they would like to buy.
-        id: {
-            name: 'id',
-            message: 'Type in the id # of the item you want to buy',
-            validator: /^[0-9]*$/,
-            warning: 'Sorry, please enter a number'
-        },
-        // The second message should ask how many units of the product they would like to buy.
-        amount: {
-            name: 'amount',
-            message: 'How many would you like to buy?',
-            validator: /^[0-9]*$/,
-            warning: 'Sorry, please enter a number',
-        }
-    }
-}
-
 class Marketplace {
     displayInventory(hollaback) {
         connection.query('SELECT * from products', (err, result) => {
@@ -52,10 +30,14 @@ class Marketplace {
             if (amount > (res[0].stock_quantity)) {
                 console.log("Insufficient quantity, let\'s try this again");
                 startInteraction();
-            } else {
-                let amountLeft = res[0].stock_quantity - amount;
-                this.updateDB(id, amount, amountLeft);
+                return;
             }
+
+            // Now update stock quantity
+            let amountLeft = res[0].stock_quantity - amount;
+            this.updateDB(id, amount, amountLeft);
+
+            // Check permissions
         });
     }
     updateDB(id, amountPurchased, amountRemaining) {
@@ -81,6 +63,4 @@ class Marketplace {
         });
     }
 };
-
-const Bamazon = new Marketplace();
-Bamazon.startInteraction();
+exports.Marketplace = Marketplace; 

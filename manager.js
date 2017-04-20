@@ -1,5 +1,6 @@
 const inquirer = require('inquirer');
 const mysql = require('mysql');
+const { addToInventory } = require('./addinventory');
 const connection = mysql.createConnection({
     host: "localhost",
     port: 3306,
@@ -30,11 +31,10 @@ class Manager {
                     this.obtainItems();
                     break;
 
-                    // case 'Add New Product':
-                    //     break;
+            // case 'Add New Product':
+            //     break;
             }
         });
-
     }
 
     obtainItems() {
@@ -52,8 +52,6 @@ class Manager {
                 console.table(result);
             })
         }
-        // If a manager selects View Low Inventory, then it should list all items 
-        //with a inventory count lower than five.
     viewLowInventory() {
             connection.query('SELECT * from products', (err, result) => {
                 if (err) {
@@ -66,8 +64,6 @@ class Manager {
                 }
             });
         }
-        // If a manager selects Add to Inventory, your app should display a 
-        //prompt that will let the manager "add more" of any item currently in the store.
     addItemToInventory(arr) {
         inquirer.prompt([{
             type: 'list',
@@ -82,44 +78,37 @@ class Manager {
             const item = result.item;
             switch (item) {
                 case 'Coffee Sented Hand Lotion':
-                    const amountToAdd = parseInt(result.amount);
-                    connection.query('SELECT stock_quantity from products where product_name = ?', ['Coffee Sented Hand Lotion'], (err, res) => {
-                        const currentAmount = res[0].stock_quantity;
-                        const newAmount = amountToAdd + currentAmount
-                        connection.query('UPDATE products SET stock_quantity = ? WHERE product_name= ?', [newAmount, 'Coffee Sented Hand Lotion'], (err, res) => {
-                            console.log(item, 'now has', newAmount, 'units!');
-                        })
-                    })
+                    addToInventory('Coffee Sented Hand Lotion', result.amount);
                     break;
                 case 'Queen-sized Bed Frame':
-                    const amountToAdd = parseInt(result.amount);
-                    connection.query('SELECT stock_quantity from products where product_name = ?', ['Queen-sized Bed Frame'], (err, res) => {
-                        const currentAmount = res[0].stock_quantity;
-                        const newAmount = amountToAdd + currentAmount
-                        connection.query('UPDATE products SET stock_quantity = ? WHERE product_name= ?', [newAmount, 'Queen-sized Bed Frame'], (err, res) => {
-                            console.log(item, 'now has', newAmount, 'units!');
-                        })
-                    })
+                    addToInventory('Queen-sized Bed Frame', result.amount);
                     break;
-                case 'Organic brown rice ':
+                case 'Organic brown rice':
+                    addToInventory('Organic brown rice', result.amount);
                     break;
                 case 'Backstreet Boys Best Hits Album':
+                    addToInventory('Backstreet Boys Best Hits Album', result.amount);
                     break;
                 case 'Women\'s Black Yoga Pants':
+                    addToInventory('Women\'s Black Yoga Pants', result.amount);
                     break;
                 case 'Stainless Steel Band':
+                    addToInventory('Stainless Steel Band', result.amount);
                     break;
                 case 'Nike Air Running Shoes':
+                    addToInventory('Nike Air Running Shoes', result.amount);
                     break;
                 case 'Aquqmarine Throw Pillow':
+                    addToInventory('Aquqmarine Throw Pillow', result.amount);
                     break;
                 case 'Hydroflask Water Bottle':
+                    addToInventory('Hydroflask Water Bottle', result.amount);
                     break;
                 case 'iPhone 6 Otterbox':
+                    addToInventory('iPhone 6 Otterbox', result.amount);
+                    break;
             }
-
         });
-
     }
 
     // // If a manager selects Add New Product, it should allow the manager to 

@@ -1,6 +1,9 @@
 const properties = require('./prompts');
+const { Manager } = require('./manager');
+const colors = require("colors/safe");
 const prompt = require('prompt');
 const mysql = require('mysql');
+const inquirer = require('inquirer');
 const connection = mysql.createConnection({
     host: "localhost",
     port: 3306,
@@ -8,6 +11,7 @@ const connection = mysql.createConnection({
     password: "",
     database: "bamazon_db"
 });
+
 class Marketplace {
     displayInventory(hollaback) {
         connection.query('SELECT * from products', (err, result) => {
@@ -17,10 +21,26 @@ class Marketplace {
     }
     startInteraction() {
         this.displayInventory(() => {
-            prompt.start();
-            prompt.get(properties, (err, result) => {
-                this.checkBamazonInventory(result.id, result.amount);
+            inquirer.prompt([{
+                type: 'list',
+                name: 'user',
+                message: 'Are you a customer or a store manager?',
+                choices: ['Customer', 'Manager']
+            }]).then((response) => {
+                if (response.user === 'Customer') {
+                    prompt.message = colors.rainbow("Question!");
+                    prompt.delimiter = colors.green("><");
+                    prompt.start();
+                    prompt.get(properties, (err, result) => {
+                        this.checkBamazonInventory(result.id, result.amount);
+                    });
+                } else {
+                    const StoreManager = new Manager(); 
+                    StoreManager.chooseAction();
+                }
+
             });
+
         });
     }
     checkBamazonInventory(id, amount) {
@@ -52,15 +72,15 @@ class Marketplace {
         });
     }
     calculateTotal(id, quantity) {
-        connection.query('SELECT price FROM products WHERE item_id = ?',[id], (err, res)=> {
-        	if (!err){
-        		let total = quantity * res[0].price;
-        		console.log('Your total is: $'+total);
-        	} else {
-        		console.log(err);
-        	}
-        	
+        connection.query('SELECT price FROM products WHERE item_id = ?', [id], (err, res) => {
+            if (!err) {
+                let total = quantity * res[0].price;
+                console.log('Your total is: $' + total);
+            } else {
+                console.log(err);
+            }
+
         });
     }
 };
-exports.Marketplace = Marketplace; 
+exports.Marketplace = Marketplace;

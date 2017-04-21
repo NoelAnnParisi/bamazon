@@ -13,31 +13,34 @@ const connection = mysql.createConnection({
 });
 
 class Marketplace {
-    displayInventory() {
+    displayInventory(hollaback) {
         connection.query('SELECT * from products', (err, result) => {
             console.table(result);
+            hollaback();
         });
     }
     startInteraction() {
-        inquirer.prompt([{
-            type: 'list',
-            name: 'user',
-            message: 'Are you a customer or a store manager?',
-            choices: ['Customer', 'Manager']
-        }]).then((response) => {
-            if (response.user === 'Customer') {
-                // figure our where to add this.displayInventory()
-                prompt.start();
-                prompt.get(properties, (err, result) => {
-                    this.checkBamazonInventory(result.id, result.amount);
-                });
-                // prompt.message = colors.rainbow("Question!");
-                // prompt.delimiter = colors.green("><");
-            } else {
-                const StoreManager = new Manager();
-                StoreManager.chooseAction();
-            }
-        });
+        this.displayInventory(() => {
+            inquirer.prompt([{
+                type: 'list',
+                name: 'user',
+                message: 'Are you a customer or a store manager?',
+                choices: ['Customer', 'Manager']
+            }]).then((response) => {
+                if (response.user === 'Customer') {
+                    this.displayInventory()
+                    prompt.start();
+                    prompt.get(properties, (err, result) => {
+                            this.checkBamazonInventory(result.id, result.amount);
+                        })
+                        // prompt.message = colors.rainbow("Question!");
+                    prompt.delimiter = colors.magenta(">");
+                } else {
+                    const StoreManager = new Manager();
+                    StoreManager.chooseAction();
+                }
+            });
+        })
     }
     checkBamazonInventory(id, amount) {
         connection.query('SELECT * FROM products where item_id = ?', [id], (err, res) => {

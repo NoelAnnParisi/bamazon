@@ -4,15 +4,15 @@ const properties = {
         id: {
             name: 'id',
             message: 'Type in the id # of the item you want to buy',
-            validator: /^[0-9]*$/,
-            warning: 'Sorry, please enter a number'
+            validator: /^(?:[1-9]|0[1-9]|10)$/,
+            warning: 'Sorry, please enter an id number found in the table above'
         },
         // The second message should ask how many units of the product they would like to buy.
         amount: {
             name: 'amount',
             message: 'How many would you like to buy?',
             validator: /^[0-9]*$/,
-            warning: 'Sorry, please enter a number',
+            warning: 'Sorry, please enter a whole number',
         }
     }
 };
@@ -33,14 +33,14 @@ const propertiesAddItem = {
             name: 'price',
             message: 'How much will each unit cost?',
             validator: /^\d+\.\d{0,2}$/,
-            warning: 'Sorry, please enter a number'
+            warning: 'Please enter dollar and cents!'
         },
 
         stock_quantity: {
             name: 'stock_quantity',
             message: 'How many units are you adding?',
             validator: /^[0-9]*$/,
-            warning: 'Sorry, please enter a number'
+            warning: 'Sorry, please enter a whole number'
         }
     }
 }

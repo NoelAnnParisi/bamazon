@@ -1,7 +1,7 @@
 'use strict';
 
 require('console.table');
-const { Marketplace } = require('./marketplace');
+const { Marketplace } = require('./customer');
 
 const Bamazon = new Marketplace();
 Bamazon.startInteraction();

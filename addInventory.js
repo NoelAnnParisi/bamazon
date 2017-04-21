@@ -16,6 +16,8 @@ exports.addToInventory = function(productName, amount) {
             console.log(productName, 'now has', newAmount, 'units!');
         })
     })
-
 };
+
+
+
 

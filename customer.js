@@ -1,4 +1,4 @@
-const properties = require('./prompts');
+const { properties } = require('./prompts');
 const { Manager } = require('./manager');
 const colors = require("colors/safe");
 const prompt = require('prompt');
@@ -13,34 +13,30 @@ const connection = mysql.createConnection({
 });
 
 class Marketplace {
-    displayInventory(hollaback) {
+    displayInventory() {
         connection.query('SELECT * from products', (err, result) => {
             console.table(result);
-            hollaback();
         });
     }
     startInteraction() {
-        this.displayInventory(() => {
-            inquirer.prompt([{
-                type: 'list',
-                name: 'user',
-                message: 'Are you a customer or a store manager?',
-                choices: ['Customer', 'Manager']
-            }]).then((response) => {
-                if (response.user === 'Customer') {
-                    prompt.message = colors.rainbow("Question!");
-                    prompt.delimiter = colors.green("><");
-                    prompt.start();
-                    prompt.get(properties, (err, result) => {
-                        this.checkBamazonInventory(result.id, result.amount);
-                    });
-                } else {
-                    const StoreManager = new Manager(); 
-                    StoreManager.chooseAction();
-                }
-
-            });
-
+        inquirer.prompt([{
+            type: 'list',
+            name: 'user',
+            message: 'Are you a customer or a store manager?',
+            choices: ['Customer', 'Manager']
+        }]).then((response) => {
+            if (response.user === 'Customer') {
+                // figure our where to add this.displayInventory()
+                prompt.start();
+                prompt.get(properties, (err, result) => {
+                    this.checkBamazonInventory(result.id, result.amount);
+                });
+                // prompt.message = colors.rainbow("Question!");
+                // prompt.delimiter = colors.green("><");
+            } else {
+                const StoreManager = new Manager();
+                StoreManager.chooseAction();
+            }
         });
     }
     checkBamazonInventory(id, amount) {
@@ -52,7 +48,6 @@ class Marketplace {
                 startInteraction();
                 return;
             }
-
             // Now update stock quantity
             let amountLeft = res[0].stock_quantity - amount;
             this.updateDB(id, amount, amountLeft);

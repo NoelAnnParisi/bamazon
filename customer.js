@@ -28,32 +28,35 @@ class Marketplace {
                 choices: ['Customer', 'Manager']
             }]).then((response) => {
                 if (response.user === 'Customer') {
-                    this.displayInventory()
                     prompt.start();
                     prompt.get(properties, (err, result) => {
                             this.checkBamazonInventory(result.id, result.amount);
                         })
                         // prompt.message = colors.rainbow("Question!");
-                    prompt.delimiter = colors.magenta(">");
                 } else {
                     const StoreManager = new Manager();
                     StoreManager.chooseAction();
                 }
-            });
+            })
         })
     }
-    checkBamazonInventory(id, amount) {
+    checkBamazonInventory(id, amount, hollaback) {
         connection.query('SELECT * FROM products where item_id = ?', [id], (err, res) => {
             // If not, the app should log a phrase like Insufficient quantity!, and then 
             //prevent the order from going through.
-            if (amount > (res[0].stock_quantity)) {
-                console.log("Insufficient quantity, let\'s try this again");
-                startInteraction();
-                return;
+            const quantity = res[0].stock_quantity
+            if (amount >= (quantity)) {
+                console.log("Insufficient quantity, there's only,", quantity, "left!");
+                prompt.get(properties, (err, result) => {
+                    this.checkBamazonInventory(result.id, result.amount);
+                })
+
+            } else {
+                let amountLeft = res[0].stock_quantity - amount;
+                this.updateDB(id, amount, amountLeft);
             }
             // Now update stock quantity
-            let amountLeft = res[0].stock_quantity - amount;
-            this.updateDB(id, amount, amountLeft);
+
 
             // Check permissions
         });
@@ -81,4 +84,5 @@ class Marketplace {
         });
     }
 };
+
 exports.Marketplace = Marketplace;

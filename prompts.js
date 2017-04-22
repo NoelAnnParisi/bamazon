@@ -4,7 +4,7 @@ const properties = {
         id: {
             name: 'id',
             message: 'Type in the id # of the item you want to buy',
-            validator: /^(?:[1-9]|0[1-9]|10)$/,
+            validator: /^[0-9]*$/,
             warning: 'Sorry, please enter an id number found in the table above'
         },
         // The second message should ask how many units of the product they would like to buy.

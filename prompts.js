@@ -3,7 +3,7 @@ const properties = {
         // The first should ask them the ID of the product they would like to buy.
         id: {
             name: 'id',
-            message: 'Type in the id # of the item you want to buy',
+            message: 'Type in the item_id of the item you want to buy',
             validator: /^[0-9]*$/,
             warning: 'Sorry, please enter an id number found in the table above'
         },
@@ -45,27 +45,43 @@ const propertiesAddItem = {
     }
 };
 
+const identifyUser = [{
+    type: 'list',
+    name: 'user',
+    message: 'Are you a customer or a store manager?',
+    choices: ['Customer', 'Manager']
+}];
+
+const buyMorePrompt = [{
+    type: 'list',
+    name: 'continue',
+    message: 'Would you like to buy anything else?',
+    choices: ['Yes, please!', 'No, but thanks!']
+}];
+
 const addItemPrompt = [{
-            type: 'list',
-            name: 'item',
-            message: 'Which item would you like to restock?',
-            choices: []
-        }, {
-            type: 'input',
-            name: 'amount',
-            message: 'How many items are you adding to your inventory today?'
-        }]
+    type: 'list',
+    name: 'item',
+    message: 'Which item would you like to restock?',
+    choices: []
+}, {
+    type: 'input',
+    name: 'amount',
+    message: 'How many items are you adding to your inventory today?'
+}]
 
 const managerChooseAction = [{
-            type: 'list',
-            name: 'action',
-            message: 'What would you like to do today?',
-            choices: ['View Products for Sale', 'View Low Inventory', 'Add to Inventory', 'Add New Product']
-        }];
+    type: 'list',
+    name: 'action',
+    message: 'What would you like to do today?',
+    choices: ['View Products for Sale', 'View Low Inventory', 'Add to Inventory', 'Add New Product']
+}];
 
 module.exports = {
     properties: properties,
     propertiesAddItem: propertiesAddItem,
+    identifyUser: identifyUser,
+    buyMorePrompt: buyMorePrompt,
     addItemPrompt: addItemPrompt,
     managerChooseAction: managerChooseAction
 }

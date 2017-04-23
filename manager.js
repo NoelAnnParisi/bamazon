@@ -1,7 +1,7 @@
 const inquirer = require('inquirer');
 const prompt = require('prompt');
 const mysql = require('mysql');
-const { addToInventory } = require('./addinventory');
+// const { addToInventory } = require('./addinventory');
 const { propertiesAddItem, addItemPrompt, managerChooseAction } = require('./prompts');
 const connection = mysql.createConnection({
     host: "localhost",
@@ -31,17 +31,12 @@ class Manager {
         });
     }
     getItems(callback) {
-        connection.query('SELECT * from products', callback); 
-    }
-    obtainItems() {
-        this.getItems((err, result) => {
-            const arrayOfItems = result.map(row => row.product_name);            
-            return this.addItemToInventory(arrayOfItems);                
-        }); 
+        connection.query('SELECT * from products', callback);
     }
     viewProducts() {
         this.getItems((err, result) => {
-            return console.table(result);
+            console.table(result);
+            this.chooseAction();
         })
     }
     viewLowInventory() {
@@ -49,17 +44,35 @@ class Manager {
             if (err) {
                 return console.log(err);
             }
-            return result.forEach(item => {
-                if (item.stock_quantity <= 10) {
+            result.forEach(item => {
+                if (item.stock_quantity <= 15) {
                     console.log(`You have ${item.stock_quantity} units left of ${item.product_name}`);
                 }
-            });
+            })
+            this.chooseAction();
         });
     }
-    addItemToInventory(arr) {
-        addItemPrompt[0].choices = arr; 
+    obtainItems() {
+        this.getItems((err, result) => {
+            const arrayOfItems = result.map(row => row.product_name);
+            return this.chooseItemToAdd(arrayOfItems);
+        });
+    }
+    chooseItemToAdd(arr) {
+        addItemPrompt[0].choices = arr;
         return inquirer.prompt(addItemPrompt).then((result) => {
-            addToInventory(result.item, result.amount);
+            this.addToInventory(result.item, result.amount);
+        });
+    }
+    addToInventory(productName, amount) {
+        const amountToAdd = parseInt(amount);
+        connection.query('SELECT stock_quantity from products where product_name = ?', [productName], (err, res) => {
+            const currentAmount = res[0].stock_quantity;
+            const newAmount = amountToAdd + currentAmount
+            connection.query('UPDATE products SET stock_quantity = ? WHERE product_name= ?', [newAmount, productName], (err, res) => {
+                console.log(`${productName} now has ${newAmount}, units!`);
+                this.chooseAction();
+            });
         });
     }
     addNewProduct() {
@@ -68,6 +81,7 @@ class Manager {
             console.log(result);
             connection.query('INSERT INTO products SET ?', result, (err, res) => {
                 console.log('You\'ve added an item!');
+                this.chooseAction();
             });
         });
     }

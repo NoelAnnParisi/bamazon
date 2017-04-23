@@ -21,7 +21,7 @@ class Marketplace {
     }
     startInteraction() {
         this.displayInventory(() => {
-            inquirer.prompt(identifyUser).then((response) => {
+            inquirer.prompt(identifyUser).then(response => {
                 if (response.user === 'Customer') {
                     prompt.get(properties, (err, result) => {
                         this.checkBamazonInventory(result.id, result.amount);
@@ -59,28 +59,46 @@ class Marketplace {
             if (!err) {
                 console.log(`Thank you, you're purchase is complete.`);
                 console.log(`Now, we only have ${amountRemaining} left in stock!`);
-                this.calculateTotal(id, amountPurchased);
+                this.calculateTotal(id, amountPurchased)
+                    .then(() => {
+                        inquirer.prompt(buyMorePrompt).then(response => {
+                            const buyMore = response.continue;
+                            if (buyMore === 'Yes please!') {
+                                this.startInteraction();
+                            } else {
+                                console.log('See you later!');
+                            }
+                        });
+                    })
+                    .catch(error =>{
+                        // handle error
+                    });
             } else {
                 console.log(err);
             }
         });
     }
     calculateTotal(id, quantity) {
-        connection.query('SELECT price FROM products WHERE item_id = ?', [id], (err, res) => {
-            if (!err) {
-                let total = quantity * res[0].price;
-                console.log(`Your total is: $ ${total}`);
-                inquirer.prompt(buyMorePrompt).then(response => {
-                    const buyMore = response.continue;
-                    if (buyMore === 'Yes, please!') {
-                        this.startInteraction();
-                    } else {
-                        console.log('See you later!');
-                    }
-                });
-            } 
-            console.log(err);
+        return new Promise((resolve, reject) => {
+            connection.query('SELECT price FROM products WHERE item_id = ?', [id], (err, res) => {
+                if (!err) {
+                    let total = parseInt(quantity) * res[0].price;
+                    resolve(total);
+                    console.log(`Your total is ${total}`);
+                    reject(connection.error);
+                }
+            });
         });
     }
-};
+        // this needs to be resolved and their total needs to be displayed before inquire
+        // once that is done then prompt user to buy more
+        // inquirer.prompt(buyMorePrompt).then(response => {
+        //     const buyMore = response.continue;
+        //     if (buyMore === 'Yes please!') {
+        //         this.startInteraction();
+        //     } else {
+        //         console.log('See you later!');
+        //     }
+        // });
+}
 exports.Marketplace = Marketplace;

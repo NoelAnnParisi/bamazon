@@ -56,7 +56,7 @@ const buyMorePrompt = [{
     type: 'list',
     name: 'continue',
     message: 'Would you like to buy anything else?',
-    choices: ['Yes, please!', 'No, but thanks!']
+    choices: ['Yes please!', 'No but thanks!']
 }];
 
 const addItemPrompt = [{
@@ -67,8 +67,14 @@ const addItemPrompt = [{
 }, {
     type: 'input',
     name: 'amount',
-    message: 'How many items are you adding to your inventory today?'
-}]
+    message: 'How many items are you adding to your inventory today?',
+    validate: val => {
+        if (/^[0-9]*$/.test(val)) {
+            return true
+        }
+        return "Please enter an integer";
+    }
+}];
 
 const managerChooseAction = [{
     type: 'list',

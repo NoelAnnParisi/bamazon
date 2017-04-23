@@ -10,8 +10,7 @@ const connection = mysql.createConnection({
     password: "",
     database: "bamazon_db"
 });
-// If a manager selects View Products for Sale, the app should list every 
-//available item: the item IDs, names, prices, and quantities.
+
 class Manager {
     chooseAction() {
         inquirer.prompt([{
@@ -36,7 +35,7 @@ class Manager {
             }
         });
     }
-    obtainItems(config) {
+    obtainItems() {
         connection.query('SELECT * from products', (err, result) => {
             const arrayOfItems = [];
             for (let i = 0; i < result.length; i++) {
@@ -74,39 +73,7 @@ class Manager {
             name: 'amount',
             message: 'How many items are you adding to your inventory today?'
         }]).then((result) => {
-            const item = result.item;
-            switch (item) {
-                case 'Coffee Sented Hand Lotion':
-                    addToInventory('Coffee Sented Hand Lotion', result.amount);
-                    break;
-                case 'Queen-sized Bed Frame':
-                    addToInventory('Queen-sized Bed Frame', result.amount);
-                    break;
-                case 'Organic brown rice':
-                    addToInventory('Organic brown rice', result.amount);
-                    break;
-                case 'Backstreet Boys Best Hits Album':
-                    addToInventory('Backstreet Boys Best Hits Album', result.amount);
-                    break;
-                case 'Women\'s Black Yoga Pants':
-                    addToInventory('Women\'s Black Yoga Pants', result.amount);
-                    break;
-                case 'Stainless Steel Band':
-                    addToInventory('Stainless Steel Band', result.amount);
-                    break;
-                case 'Nike Air Running Shoes':
-                    addToInventory('Nike Air Running Shoes', result.amount);
-                    break;
-                case 'Aquqmarine Throw Pillow':
-                    addToInventory('Aquqmarine Throw Pillow', result.amount);
-                    break;
-                case 'Hydroflask Water Bottle':
-                    addToInventory('Hydroflask Water Bottle', result.amount);
-                    break;
-                case 'iPhone 6 Otterbox':
-                    addToInventory('iPhone 6 Otterbox', result.amount);
-                    break;
-            }
+            addToInventory(result.item, result.amount);
         });
     }
     addNewProduct() {

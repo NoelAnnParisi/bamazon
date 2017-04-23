@@ -43,8 +43,29 @@ const propertiesAddItem = {
             warning: 'Sorry, please enter a whole number'
         }
     }
-}
+};
+
+const addItemPrompt = [{
+            type: 'list',
+            name: 'item',
+            message: 'Which item would you like to restock?',
+            choices: []
+        }, {
+            type: 'input',
+            name: 'amount',
+            message: 'How many items are you adding to your inventory today?'
+        }]
+
+const managerChooseAction = [{
+            type: 'list',
+            name: 'action',
+            message: 'What would you like to do today?',
+            choices: ['View Products for Sale', 'View Low Inventory', 'Add to Inventory', 'Add New Product']
+        }];
+
 module.exports = {
     properties: properties,
-    propertiesAddItem: propertiesAddItem
+    propertiesAddItem: propertiesAddItem,
+    addItemPrompt: addItemPrompt,
+    managerChooseAction: managerChooseAction
 }

@@ -2,7 +2,7 @@ const inquirer = require('inquirer');
 const prompt = require('prompt');
 const mysql = require('mysql');
 const { addToInventory } = require('./addinventory');
-const { propertiesAddItem } = require('./prompts');
+const { propertiesAddItem, addItemPrompt, managerChooseAction } = require('./prompts');
 const connection = mysql.createConnection({
     host: "localhost",
     port: 3306,
@@ -13,12 +13,7 @@ const connection = mysql.createConnection({
 
 class Manager {
     chooseAction() {
-        inquirer.prompt([{
-            type: 'list',
-            name: 'action',
-            message: 'What would you like to do today?',
-            choices: ['View Products for Sale', 'View Low Inventory', 'Add to Inventory', 'Add New Product']
-        }]).then((response) => {
+        inquirer.prompt(managerChooseAction).then((response) => {
             switch (response.action) {
                 case 'View Products for Sale':
                     this.viewProducts();
@@ -35,44 +30,35 @@ class Manager {
             }
         });
     }
-    obtainItems() {
-        connection.query('SELECT * from products', (err, result) => {
-            const arrayOfItems = [];
-            for (let i = 0; i < result.length; i++) {
-                arrayOfItems.push(result[i].product_name);
-            }            
-            this.addItemToInventory(arrayOfItems);                
-        })
+    getItems(callback) {
+        connection.query('SELECT * from products', callback); 
     }
-
+    obtainItems() {
+        this.getItems((err, result) => {
+            const arrayOfItems = result.map(row => row.product_name);            
+            return this.addItemToInventory(arrayOfItems);                
+        }); 
+    }
     viewProducts() {
-        connection.query('SELECT * from products', (err, result) => {
-            console.table(result);
+        this.getItems((err, result) => {
+            return console.table(result);
         })
     }
     viewLowInventory() {
-        connection.query('SELECT * from products', (err, result) => {
+        this.getItems((err, result) => {
             if (err) {
-                console.log(err);
+                return console.log(err);
             }
-            for (let i = 0; i < result.length; i++) {
-                if (result[i].stock_quantity <= 15) {
-                    console.log('You have', result[i].stock_quantity, 'units left of', result[i].product_name);
+            return result.forEach(item => {
+                if (item.stock_quantity <= 10) {
+                    console.log(`You have ${item.stock_quantity} units left of ${item.product_name}`);
                 }
-            }
+            });
         });
     }
     addItemToInventory(arr) {
-        inquirer.prompt([{
-            type: 'list',
-            name: 'item',
-            message: 'Which item would you like to restock?',
-            choices: arr
-        }, {
-            type: 'input',
-            name: 'amount',
-            message: 'How many items are you adding to your inventory today?'
-        }]).then((result) => {
+        addItemPrompt[0].choices = arr; 
+        return inquirer.prompt(addItemPrompt).then((result) => {
             addToInventory(result.item, result.amount);
         });
     }

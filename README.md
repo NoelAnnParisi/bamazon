@@ -3,11 +3,11 @@
 Using Node.js and a MySQL database I've built a backend application which allows users to browse "Bamazon". 
 
 ## The views: 
-** Customer ** 
+**Customer** 
  * view the inventory 
  * "Buy" the items (so long as their order does not exceed the quantity in stock). 
  
-** Manager **
+**Manager**
  * View products for sale
  * View low inventory
  * Add to inventory

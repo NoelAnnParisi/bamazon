@@ -4,13 +4,13 @@ Using Node.js and a MySQL database I've built a backend application which allows
 
 ## The views: 
 1. Customer 
-  * view the inventory 
-  * "Buy" the items (so long as their order does not exceed the quantity in stock). 
+ * view the inventory 
+ * "Buy" the items (so long as their order does not exceed the quantity in stock). 
 2. Manager
-  * View products for sale
-  * View low inventory
-  * Add to inventory
-  * Add new product
+ * View products for sale
+ * View low inventory
+ * Add to inventory
+ * Add new product
 
 These views allow user's to interact with the MySQL database in order to perfom the selected action. 
 
